@@ -7,22 +7,21 @@
 #include <span>
 #include <algorithm>
 
+
 // the name has to be different from the class...
 namespace bitarrays {
 
-
-namespace _private {
-/* Not part of the API; this is the implementation */
-void bitarray_do_shift_left(std::span<u_int32_t> const &, size_t) noexcept;
-void bitarray_do_shift_right(std::span<u_int32_t> const &, size_t) noexcept;
-void bitarray_do_fill_from(size_t, std::span<const u_int32_t> const &, std::span<u_int32_t> const &) noexcept;
-size_t bitarray_do_popcount(std::span<const u_int32_t> const &) noexcept;
-int16_t bitarray_do_lsb(std::span<const u_int32_t> const &) noexcept;
-int16_t bitarray_do_msb(std::span<const u_int32_t> const &) noexcept;
-
-void bitarray_do_ostream(std::ostream &, std::span<const u_int32_t> const &);
-void bitarray_do_istream(std::ostream &, std::span<u_int32_t> const &);
-}
+    namespace _private {
+    /* Not part of the API; this is the implementation */
+        void bitarray_do_shift_left(std::span < u_int32_t > const &, size_t) noexcept;
+        void bitarray_do_shift_right(std::span < u_int32_t > const &, size_t) noexcept;
+        void bitarray_do_fill_from(size_t, std::span<const u_int32_t> const &, std::span <u_int32_t> const &) noexcept;
+        size_t bitarray_do_popcount(std::span<const u_int32_t> const &) noexcept;
+        int16_t bitarray_do_lsb(std::span<const u_int32_t> const &) noexcept;
+        int16_t bitarray_do_msb(std::span<const u_int32_t> const &) noexcept;
+        void bitarray_do_ostream(std::ostream &, std::span<const u_int32_t> const &);
+        void bitarray_do_istream(std::ostream &, std::span <u_int32_t> const &);
+    }
 
 
 /** Bitarray - a semi-optimised/optimisable POD bit vector of fixed length.

@@ -1,13 +1,12 @@
-#include "bitarray.hh"
 #include <algorithm>
 #include <numeric>
 #include <bit>
 #include <iomanip>
+#include <span>
 
 namespace bitarrays {
-    namespace _private {
 
-
+namespace _private {
 
 void
 bitarray_do_shift_left(std::span<u_int32_t> const &data, size_t k) noexcept
@@ -147,8 +146,8 @@ bitarray_do_ostream(std::ostream &os, std::span<const u_int32_t> const &data)
 	os << std::setfill('0') << std::setw(sizeof(u_int32_t)*2) << *y << ' ';
 }
 
+} // _private
 
-    } // _private
 } // bitarrays
 
 
