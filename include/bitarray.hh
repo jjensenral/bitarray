@@ -6,7 +6,7 @@
 #include <iosfwd>
 #include <span>
 #include <algorithm>
-
+#include <cstddef>
 
 // the name has to be different from the class...
 namespace bitarrays {
@@ -43,7 +43,7 @@ namespace bitarrays {
  */
 
 template<size_t SIZE>
-requires( SIZE < 1024 )
+requires( SIZE < 1024 && SIZE > 0 )
 class bitarray {
 
     //    std::array<u_int32_t, ((SIZE + 0x1f) >>5)> data_;
@@ -58,8 +58,24 @@ public:
     static constexpr size_t hibits(size_t k) noexcept { return k >> 5; }
     static constexpr size_t tohibits(size_t k) noexcept { return k << 5; }
 
+    constexpr zero() noexcept
+    {
+        std::fill(data_.begin(), data_.end(), 0);
+    }
     constexpr bitarray() noexcept {
-	std::fill(data_.begin(), data_.end(), 0);
+	    zero();
+    }
+
+    /** Initialise from unsigned integers */
+    constexpr explicit bitarray(explicit u_int8_t b) noexcept { zero(); data_[0] = b; }
+    constexpr explicit bitarray(explicit u_int16_t w) noexcept { zero(); data_[0] = w; }
+    constexpr explicit bitarray(explicit u_int32_t d) noexcept { zero(); data_[0] = d; }
+    constexpr explicit bitarray(explicit u_int64_t q) noexcept
+    {
+        zero();
+        data_[0] = static_cast<u_int32_t>(q);
+        if constexpr(SIZE > 1)
+            data_[1] = static_cast<u_int32_t>(q >> 32);
     }
 
     /** Initialise from list, least signficiant dword first.
@@ -74,7 +90,7 @@ public:
     constexpr bool operator==(bitarray<SIZE> const &other) const noexcept { return data_ == other.data_; }
 
     /** Test bit */
-    constexpr bool bit( size_t k ) const noexcept { return data_[hibits(k)] & (1U << lobits(k)) != 0; }
+    [[nodiscard]] constexpr bool bit( size_t k ) const noexcept { return (data_[hibits(k)] & 1U << lobits(k)) != 0; }
     /** Set bit to 1 */
     constexpr void bitset( size_t k ) noexcept { data_[hibits(k)] |= (1 << lobits(k)); }
     /** Set bit to 0 */
@@ -89,13 +105,13 @@ public:
     }
 
     /** Index of least significant bit or -1 if the array is zero */
-    constexpr int16_t lsb() const noexcept { return _private::bitarray_do_lsb(data_); }
+    [[nodiscard]] constexpr int16_t lsb() const noexcept { return _private::bitarray_do_lsb(data_); }
 
     /** Index of least significant bit or -1 if the array is zero */
-    constexpr int16_t msb() const noexcept { return _private::bitarray_do_msb(data_); }
+    [[nodiscard]] constexpr int16_t msb() const noexcept { return _private::bitarray_do_msb(data_); }
 
     /** Is zero? */
-    constexpr bool is_zero() const noexcept { return std::all_of( data_.cbegin(), data_.cend(), [](auto x) { return x == 0; } ); }
+    [[nodiscard]] constexpr bool is_zero() const noexcept { return std::all_of( data_.cbegin(), data_.cend(), [](auto x) { return x == 0; } ); }
 
     /** Left bit shift; returns self */
     bitarray &operator<<=(size_t k) noexcept { _private::bitarray_do_shift_left(data_, k); return *this; }
@@ -125,7 +141,7 @@ public:
     bitarray operator^(bitarray<SIZE> const &other) const noexcept { bitarray m{*this}; m ^= other; return m; }
 
     /** Count the number of bits */
-    size_t popcount() const noexcept { return _private::bitarray_do_popcount(data_); }
+    [[nodiscard]] size_t popcount() const noexcept { return _private::bitarray_do_popcount(data_); }
 
     template <size_t MYSIZE>
     friend std::ostream &operator<<(std::ostream &os, bitarray<MYSIZE> const &w);
