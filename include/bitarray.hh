@@ -58,7 +58,7 @@ public:
     static constexpr size_t hibits(size_t k) noexcept { return k >> 5; }
     static constexpr size_t tohibits(size_t k) noexcept { return k << 5; }
 
-    constexpr zero() noexcept
+    constexpr void zero() noexcept
     {
         std::fill(data_.begin(), data_.end(), 0);
     }
@@ -67,10 +67,10 @@ public:
     }
 
     /** Initialise from unsigned integers */
-    constexpr explicit bitarray(explicit u_int8_t b) noexcept { zero(); data_[0] = b; }
-    constexpr explicit bitarray(explicit u_int16_t w) noexcept { zero(); data_[0] = w; }
-    constexpr explicit bitarray(explicit u_int32_t d) noexcept { zero(); data_[0] = d; }
-    constexpr explicit bitarray(explicit u_int64_t q) noexcept
+    constexpr explicit bitarray(u_int8_t b) noexcept { zero(); data_[0] = b; }
+    constexpr explicit bitarray(u_int16_t w) noexcept { zero(); data_[0] = w; }
+    constexpr explicit bitarray(u_int32_t d) noexcept { zero(); data_[0] = d; }
+    constexpr explicit bitarray(u_int64_t q) noexcept
     {
         zero();
         data_[0] = static_cast<u_int32_t>(q);

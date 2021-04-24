@@ -1,8 +1,16 @@
 ;;;; Make test files
 ;;;; Only required to (re)build the test code
 
+;;; How to run this code?
+;;; With SBCL,
+;;; (load #P"mktest")
+;;; (make-test-file)
+;;; (quit)
+;;;
 ;;; Who tests the testers?  If rt is loaded prior to reading this code, (some) regression tests are defined.
-;;; These can be run with (rt:do-tests)
+;;; These can be run with (rt:do-tests).  Some of these tests depend on the *random-state* of SBCL if run
+;;; with SBCL; if *random-state* changes then these regression tests will fail, but this does not affect the
+;;; generated library test code.
 
 
 (defparameter +test-file-name+ #P"bitarray.test.cc")
@@ -61,26 +69,26 @@ bool guarded_shift(std::initializer_list<u_int32_t> const &mydata, signed int sh
       (string (format nil "~{~8,'0x~}" number)))))
 
 ;; sbcl startup values used for rt
-#+rt
+#+(and rt sbcl)
 (rt:deftest (make-number 1) (make-number 5 'string *random-state*)
   "E7E1FAEED5C31F792082352CF807B7DFE9D30005")
-#+rt
+#+(and rt sbcl)
 (rt:deftest (make-number 2) (make-number 5 'string *random-state*)
   ;; repeat of above tests that random state is unaltered
   "E7E1FAEED5C31F792082352CF807B7DFE9D30005")
 
-#+rt
+#+(and rt sbcl)
 (rt:deftest (make-number 3) (make-number 5 'list *random-state*)
   ;; same number again, different format
   (3890346734 3586334585 545404204 4161255391 3922919429))
 
-#+rt
+#+(and rt sbcl)
 (rt:deftest (make-number 4) (make-number 5 'integer *random-state*)
   ;; same number again, different format
   1323816395072801286890685414170339662235283161093)
 
 #+rt
-(rt:deftest (make-number 4) (eql 1323816395072801286890685414170339662235283161093 #XE7E1FAEED5C31F792082352CF807B7DFE9D30005)
+(rt:deftest (make-number 5) (eql 1323816395072801286890685414170339662235283161093 #XE7E1FAEED5C31F792082352CF807B7DFE9D30005)
   t)
 
 
@@ -204,12 +212,25 @@ bool guarded_shift(std::initializer_list<u_int32_t> const &mydata, signed int sh
 		  (princ "    REQUIRE( fred.is_zero() );
     fred.bitset(0);
     REQUIRE( !fred.is_zero() );
-//    for(int i = 0; i < 7*32-2; ++i) {
+    for(int i = 0; i < 7*32-1; ++i) {
 	REQUIRE( fred.lsb() == i );
 	REQUIRE( fred.msb() == i );
 	fred <<= 1;
-//    }
+	REQUIRE( !fred.is_zero() );
+    }
     fred.bitclr(7*32-1);
+    REQUIRE( fred.is_zero() );
+" test-file))
+      (write-test test-file "bit test"
+		  (princ "    fred.zero();
+    REQUIRE( fred.is_zero() );
+    for(int i = 0; i < 7*32; ++i) {
+	REQUIRE( fred.bit(i) == 0 );
+	fred.bitset(i);
+	REQUIRE( fred.bit(i) == 1 );
+	fred.bitclr(i);
+	REQUIRE( fred.bit(i) == 0 );
+    }
     REQUIRE( fred.is_zero() );
 " test-file))
       )

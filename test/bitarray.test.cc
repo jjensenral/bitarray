@@ -90,14 +90,27 @@ TEST_CASE( "one bit", "[one bit]" ) {
     REQUIRE( fred.is_zero() );
     fred.bitset(0);
     REQUIRE( !fred.is_zero() );
-    for(int i = 0; i < 7*32-2; ++i) {
+    for(int i = 0; i < 7*32-1; ++i) {
 	REQUIRE( fred.lsb() == i );
 	REQUIRE( fred.msb() == i );
 	fred <<= 1;
+	REQUIRE( !fred.is_zero() );
     }
     fred.bitclr(7*32-1);
-    //REQUIRE( fred.is_zero() );
+    REQUIRE( fred.is_zero() );
 } // one bit
+TEST_CASE( "bit test", "[bit test]" ) {
+    fred.zero();
+    REQUIRE( fred.is_zero() );
+    for(int i = 0; i < 7*32; ++i) {
+	REQUIRE( fred.bit(i) == 0 );
+	fred.bitset(i);
+	REQUIRE( fred.bit(i) == 1 );
+	fred.bitclr(i);
+	REQUIRE( fred.bit(i) == 0 );
+    }
+    REQUIRE( fred.is_zero() );
+} // bit test
 
 bool guarded_shift(std::initializer_list<u_int32_t> const &mydata, signed int shift, std::initializer_list<u_int32_t> const &mytarget)
 {
@@ -116,3 +129,4 @@ bool guarded_shift(std::initializer_list<u_int32_t> const &mydata, signed int sh
     return in == out;
 }
  // End of bitarray.test.cc
+
