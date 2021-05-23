@@ -5,12 +5,20 @@ An implementation of a bit array, a kind of cross between `std::array` and `std:
 This is refactored code from an older project (in which it started out as being merely 64 bit integers), code to
 solve polyomino tilings problems, the rest of which will also be refactored at some point.
 
+It is (probably) fully obsoleted by [`std::bitset`](https://en.cppreference.com/w/cpp/utility/bitset) in C++20
+(and this code was refactored to use C++20..., even though it started life as '11 or '14)
+
 ## Background
+
+1. We need an arbitrary (but fixed) length bit array which supports bit manipulation/query functions.
+2. We need to be able to optimise these for performance, for example on specific architectures.
+3. It needs to be POD (Plain Old Data)
 
 ### Other Implementations
 
 The author also considered (and so should you):
 
+- [`std::bitset`](https://en.cppreference.com/w/cpp/utility/bitset) 
 - [`std::vector<bool>`](https://en.cppreference.com/w/cpp/container/vector_bool)
 - [`Qt::QBitArray`](https://doc.qt.io/qt-5/qbitarray.html)
 - [`boost::dynamic_bitset`](https://www.boost.org/doc/libs/1_75_0/libs/dynamic_bitset/dynamic_bitset.html)
